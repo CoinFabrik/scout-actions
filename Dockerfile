@@ -25,5 +25,7 @@ RUN cargo install --path ./apps/cargo-scout-audit/
 # Display Cargo.toml for debugging
 RUN cat ./vesting/Cargo.toml
 
-# Build and run the application
-CMD ["cargo", "scout-audit", "-m", "./vesting/Cargo.toml"]
+COPY entrypoint.sh /entrypoint.sh
+
+ENTRYPOINT ["/entrypoint.sh"]
+
