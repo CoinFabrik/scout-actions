@@ -26,6 +26,6 @@ RUN cargo install --path ./apps/cargo-scout-audit/
 RUN cat ./vesting/Cargo.toml
 
 COPY entrypoint.sh /entrypoint.sh
-
+RUN chmod +x entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
 
