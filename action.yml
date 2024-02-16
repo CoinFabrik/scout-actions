@@ -1,0 +1,22 @@
+name: Run Scout-action
+description: Run scout-action
+author: devops_cf
+
+# Define your inputs here.
+inputs:
+  target:
+    description: Folder to scan
+    required: true
+    default: target
+
+# Define your outputs here.
+outputs:
+  time:
+    description: Time execution
+
+
+runs:
+  using: docker
+  image: Dockerfile
+  env:
+    INPUT_TARGET: ${{ inputs.target}}

@@ -1,24 +1,29 @@
 FROM rust:latest
 
+SHELL ["/bin/bash", "-c"]
 
 WORKDIR /usr/src/myapp
-COPY . .
-#RUN curl https://sh.rustup.rs -sSf | bash -s -- -y
-#RUN echo 'source $HOME/.cargo/env' >> $HOME/.bashrc
-#RUN ls -ltr
-#RUN cargo install cargo-dylint dylint-link
-#RUN cargo install --path ./apps/cargo-scout-audit/
-RUN /bin/bash
-RUN apt-get -y update; apt-get -y install curl
-RUN apt-get install -y build-essential libssl-dev pkg-config
-#RUN curl https://sh.rustup.rs -sSf > rustup.sh
-#RUN chmod 755 rustup.sh
-#RUN ./rustup.sh -y
+
+# Install dependencies
+RUN apt-get update && \
+    apt-get install -y curl build-essential libssl-dev pkg-config && \
+    rm -rf /var/lib/apt/lists/*
+
+# Install Rust tools
+RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
+ENV PATH="/root/.cargo/bin:${PATH}"
+
+# Install Rust dependencies
 RUN cargo install cargo-dylint dylint-link
-RUN cargo install --path ./apps/cargo-scout-audit/
 RUN cargo install mdbook
-RUN export PATH="$HOME/.cargo/bin:$PATH"
-COPY ./vesting .
+
+
+# Copy source code
+COPY . .
+RUN cd apps/cargo-scout-audit
+RUN cargo install --path ./apps/cargo-scout-audit/
+# Display Cargo.toml for debugging
 RUN cat ./vesting/Cargo.toml
-CMD ["/usr/local/cargo/bin/cargo -h"]
-#:CMD ["/bin/bash sleep 180"]
+
+# Build and run the application
+CMD ["cargo", "scout-audit", "-m", "./vesting/Cargo.toml"]
