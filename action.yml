@@ -18,5 +18,7 @@ outputs:
 runs:
   using: docker
   image: Dockerfile
+  args:
+    - ${{ inputs.target }}
   env:
     INPUT_TARGET: ${{ inputs.target}}
