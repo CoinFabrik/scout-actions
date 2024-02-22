@@ -25,8 +25,8 @@ COPY . .
 # Display Cargo.toml for debugging
 RUN cat ./vesting/Cargo.toml
 
-COPY entrypoint.sh ./entrypoint.sh
-RUN chmod +xr ./entrypoint.sh
+COPY entrypoint.sh /usr/src/myapp/entrypoint.sh
+RUN chmod +xr /usr/src/myapp/entrypoint.sh
 RUN ls -ltr
-ENTRYPOINT ["./entrypoint.sh"]
+ENTRYPOINT ["/usr/src/myapp/entrypoint.sh"]
 
