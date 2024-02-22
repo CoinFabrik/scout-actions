@@ -5,4 +5,4 @@ TARGET="$1"
 
 echo $TARGET
 
-cargo scout-audit -m $1
+cargo scout-audit -m $TARGET
