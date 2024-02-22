@@ -5,4 +5,4 @@ TARGET="$1"
 
 echo $TARGET
 
-cargo scout-audit -m ./vesting/Cargo.toml
+cargo scout-audit -m $1
