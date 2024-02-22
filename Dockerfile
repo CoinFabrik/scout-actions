@@ -27,5 +27,6 @@ RUN cat ./vesting/Cargo.toml
 
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +xr entrypoint.sh
+RUN ls -ltr
 ENTRYPOINT ["/entrypoint.sh"]
 
