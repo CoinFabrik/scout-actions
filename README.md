@@ -51,6 +51,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: coinfabrik/scout-actions@v1
+        with:
+          target: './target/Cargo.toml'
 ```
 
 ### Options
