@@ -34,6 +34,30 @@ cargo scout-audit
 ```
 
 For more information on installation and usage, please refer to the [Getting Started](https://coinfabrik.github.io/scout/docs/intro) section in our documentation below.
+- [How to integrate with Github Actions](#how-integrate-with-github-actions)
+- [Github Code Scanning integration](#github-code-scanning-integration)
+- [Examples](#examples)
+
+## How to integrate with Github Actions
+
+Create `.github/workflows/scout.yml`:
+
+```yaml
+name: Scout-actions
+on: [push]
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: coinfabrik/scout-actions@v1
+```
+
+### Options
+
+| Key              | Description
+|------------------|------------
+| `target`         | The path to the root of the project to be analyzed by Scout. It can be a path of Cargo.toml, and it defaults to the repo root.
 
 ## Documentation
 
