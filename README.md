@@ -55,6 +55,36 @@ jobs:
           target: './target/Cargo.toml'
 ```
 
+
+### YML Description
+
+- **name: Scout-actions**: This is the name of the GitHub Action which will be viewed on the GitHub Actions dashboard.
+- **on: [push]**: This line specifies the event that will trigger the action. In this case, the GitHub Action fires whenever a push is made to the repository.
+- **jobs**: GitHub Actions can contain several jobs. In this case, only one job named analyze has been set up.
+- **analyze**: This is the name of the job.
+- **runs-on: ubuntu-latest**: This specifies the runtime environment for the job. Here, the job will run on the latest available Ubuntu version.
+- **steps**: This is a list of tasks to be carried out in the job. In this case, there are two tasks.
+- **uses: actions/checkout@v2**: The first task uses a GitHub Action called 'checkout@v2'. This is a predefined Action that allows GitHub Actions to work with a copy of your repository.
+- **uses: coinfabrik/scout-actions@v1**: The second task uses the GitHub Action 'scout-actions@v1', a version specified by coinfabrik.
+- **with** and **target: './target/Cargo.toml'**: Under the 'coinfabrik/scout-actions@v1' task, an additional option with is configured, which sets a specific target for the action under with. In this case, the target is the file './target/Cargo.toml'.
+This toml file in the target directory likely has the dependencies and project configuration that will undergo analysis.
+In short, this .yml file sets up a GitHub Action that activates on any push to the repository. When triggered, it will checkout the repository and then run the 'scout-actions@v1' Action on the './target/Cargo.toml' file.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ### Options
 
 | Key              | Description
