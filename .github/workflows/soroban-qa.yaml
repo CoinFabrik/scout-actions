@@ -17,13 +17,18 @@ jobs:
 
     - name: Build Docker image
       run: docker build -t scout-qa .
-
-  deploy:
-    runs-on: ubuntu-latest
-    needs: build  # Espera a que el trabajo 'build' se complete antes de comenzar
-
-    steps:
+      
+    - name: avoid-core-mem-forget_vulnerable
+      run: docker run -e TARGET='avoid-core-mem-forget_vulnerable-example' --name scout-qa scout-qa
+      
     - name: Insufficiently-random-values
       run: |
         docker image ls
         docker run -e TARGET='insufficiently-random-values_vulnerable-example' --name scout-qa scout-qa
+    
+    - name: soroban-version
+      run: docker run -e TARGET=' soroban-version_vulnerable-example' --name scout-qa scout-qa
+
+    - name: unprotected-update-current-contract-wasm
+      run: docker run -e TARGET='unprotected-update-current-contract-wasm_vulnerable-example' --name scout-qa scout-qa  
+
