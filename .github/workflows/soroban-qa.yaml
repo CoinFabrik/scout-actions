@@ -17,3 +17,13 @@ jobs:
 
     - name: Build Docker image
       run: docker build -t scout-qa .
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build  # Espera a que el trabajo 'build' se complete antes de comenzar
+
+    steps:
+    - name: Insufficiently-random-values
+      run: |
+        docker image ls
+        docker run -e TARGET='insufficiently-random-values_vulnerable-example' --name scout-qa scout-qa
