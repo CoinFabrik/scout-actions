@@ -19,26 +19,28 @@ jobs:
       run: docker build -t scout-qa .
       
     - name: avoid-core-mem-forget_vulnerable
+      continue-on-error: true
       run: |
         docker run -e TARGET='avoid-core-mem-forget_vulnerable-example' --name scout-qa scout-qa
         docker rm scout-qa -f 2>/dev/null
-      continue-on-error: true
+      
       
     - name: Insufficiently-random-values
+      continue-on-error: true
       run: |
         docker run -e TARGET='insufficiently-random-values_vulnerable-example' --name scout-qa scout-qa
         docker rm scout-qa 2>/dev/null
-      continue-on-error: true
+      
     
     - name: soroban-version
+      continue-on-error: true
       run: |
         docker run -e TARGET=' soroban-version_vulnerable-example' --name scout-qa scout-qa
         docker rm scout-qa -f 2>/dev/null
-      continue-on-error: true
 
     - name: unprotected-update-current-contract-wasm
+      continue-on-error: true
       run: |
         docker run -e TARGET='unprotected-update-current-contract-wasm_vulnerable-example' --name scout-qa scout-qa  
         docker rm scout-qa -f 2>/dev/null
-      continue-on-error: true
-
+      
