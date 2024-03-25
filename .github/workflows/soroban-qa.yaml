@@ -1,8 +1,10 @@
 name: Build Docker Image
 
 on:
-  schedule:
-    - cron: '0 12 * * *' 
+  push:
+    branches:
+      - soroban
+
 jobs:
   build:
     runs-on: ubuntu-latest
