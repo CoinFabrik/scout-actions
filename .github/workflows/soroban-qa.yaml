@@ -1,0 +1,37 @@
+name: Build Docker Image
+
+on:
+  schedule:
+    - cron: '0 12 * * *' 
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+      with:
+        ref: soroban   # Checkout del branch 'soroban'
+
+    - name: Build Docker image
+      run: docker build -t scout-qa .
+      
+    - name: avoid-core-mem-forget_vulnerable
+      run: |
+        docker run -e TARGET='avoid-core-mem-forget_vulnerable-example' --name scout-qa scout-qa
+        docker rm scout-qa -f 2>/dev/null
+      
+    - name: Insufficiently-random-values
+      run: |
+        docker run -e TARGET='insufficiently-random-values_vulnerable-example' --name scout-qa scout-qa
+        docker rm scout-qa 2>/dev/null
+    
+    - name: soroban-version
+      run: |
+        docker run -e TARGET=' soroban-version_vulnerable-example' --name scout-qa scout-qa
+        docker rm scout-qa -f 2>/dev/null
+
+    - name: unprotected-update-current-contract-wasm
+      run: |
+        docker run -e TARGET='unprotected-update-current-contract-wasm_vulnerable-example' --name scout-qa scout-qa  
+        docker rm scout-qa -f 2>/dev/null
