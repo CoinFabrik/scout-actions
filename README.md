@@ -1,17 +1,14 @@
 # Scout: Security Analysis Tool
 
-![https://img.shields.io/badge/license-MIT-green](https://img.shields.io/badge/license-MIT-green)
-
 <p align="center">
-  <img src="/assets/scout.png" alt="Scout in a Dark Forest" width="300" center  />
+  <img src="https://raw.githubusercontent.com/CoinFabrik/scout/c1eb3073f85b051dc9ce2fa0ab1ebab4bde0914e/assets/scout.png" alt="Scout in a Dark Forest" width="300" center  />
 </p>
 
-Scout is an extensible open-source tool intended to assist ink! smart contract developers and auditors detect common security issues and deviations from best practices.
+Scout is an extensible open-source tool intended to assist [ink!](https://use.ink/smart-contracts-polkadot/) and [Soroboan](https://stellar.org/soroban) smart contract developers and auditors detect common security issues and deviations from best practices.
 
 This tool will help developers write secure and more robust smart contracts.
 
-Our interest in this project comes from our experience in manual auditing and our usage of comparable tools in other blockchains.
-To improve coverage and precision, we´ll persist in research efforts on static and dynamic analysis techniques. Find more about our ongoing research at our associated repository.
+Our interest in this project comes from our experience in manual auditing and our usage of comparable tools in other blockchains. To improve coverage and precision, we´ll persist in research efforts on static and dynamic analysis techniques.
 
 ## Quick Start
 
@@ -33,7 +30,7 @@ To run Scout on your project, navigate to its root directory and execute the fol
 cargo scout-audit
 ```
 
-For more information on installation and usage, please refer to the [Getting Started](https://coinfabrik.github.io/scout/docs/intro) section in our documentation below.
+For more information on Scout's installation and usage, please refer to Scout's documentation for ink! or Soroban [Getting Started](https://coinfabrik.github.io/scout/docs/intro) section in our documentation below.
 - [How to integrate with Github Actions](#how-integrate-with-github-actions)
 - [Github Code Scanning integration](#github-code-scanning-integration)
 - [Examples](#examples)
