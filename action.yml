@@ -8,6 +8,11 @@ inputs:
     description: Folder to scan
     required: true
     default: target
+  
+  scout_args:
+    description: Scout args
+    required: false
+    type: string
 
 # Define your outputs here.
 outputs:
@@ -22,3 +27,4 @@ runs:
     - ${{ inputs.target }}
   env:
     INPUT_TARGET: ${{ inputs.target}}
+    SCOUT_ARGS: ${{inputs.scout_args}}
