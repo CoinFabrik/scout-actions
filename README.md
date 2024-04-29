@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: coinfabrik/scout-actions@v2.3
+      - uses: coinfabrik/scout-actions@v2.4
         with:
           target: './target/Cargo.toml'
           scout_args: (scout arguments)
@@ -39,8 +39,8 @@ jobs:
 - **runs-on: ubuntu-latest**: This specifies the runtime environment for the job. Here, the job will run on the latest available Ubuntu version.
 - **steps**: This is a list of tasks to be carried out in the job. In this case, there are two tasks.
 - **uses: actions/checkout@v2**: The first task uses a GitHub Action called 'checkout@v2'. This is a predefined Action that allows GitHub Actions to work with a copy of your repository.
-- **uses: coinfabrik/scout-actions@v2.3**: The second task uses the GitHub Action 'scout-actions@v1', a version specified by coinfabrik.
-- **with** and **target**: './target/Cargo.toml'**: Under the 'coinfabrik/scout-actions@v2.3' task, an additional option 
+- **uses: coinfabrik/scout-actions@v2.4**: The second task uses the GitHub Action 'scout-actions@v1', a version specified by coinfabrik.
+- **with** and **target**: './target/Cargo.toml'**: Under the 'coinfabrik/scout-actions@v2.4' task, an additional option 
 with is configured, which sets a specific target for the action under with. In this case, the target is the file './target/Cargo.toml'.
 This toml file in the target directory likely has the dependencies and project configuration that will undergo analysis.
 - **with/scout-args**: allows you to specify custom arguments for scout. The default already is _-v_ which makes scout verbose, you don't need to specify it again.
@@ -85,7 +85,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: do scout
-        uses: coinfabrik/scout-actions@v2.3
+        uses: coinfabrik/scout-actions@v2.4
         with:
           target: 'avoid-autokey-upgradable/avoid-autokey-upgradable-1/vulnerable-example/'
           markdown_output: "true"
