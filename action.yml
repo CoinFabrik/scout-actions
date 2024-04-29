@@ -5,19 +5,25 @@ author: devops_cf
 # Define your inputs here.
 inputs:
   target:
-    description: Folder to scan
+    description: Folder to scan for Cargo.toml
     required: true
-    default: target
-  
+    default: .
+
   scout_args:
     description: Scout args
     required: false
-    type: string
+    default: "-v"
+
+  markdown_output:
+    description: Generate markdown output
+    required: false
+    default: "false"
 
 # Define your outputs here.
-outputs:
-  time:
-    description: Time execution
+# -> At the moment the output will be: ${{ github.workspace }}/report.md
+#outputs:
+#  mdreport:
+#    description: markdown report
 
 #run docker
 runs:
@@ -26,5 +32,6 @@ runs:
   args:
     - ${{ inputs.target }}
   env:
-    INPUT_TARGET: ${{ inputs.target}}
-    SCOUT_ARGS: ${{inputs.scout_args}}
+    INPUT_TARGET: ${{ inputs.target }}
+    INPUT_MARKDOWN_OUTPUT: ${{ inputs.markdown_output }}
+    INPUT_SCOUT_ARGS: ${{ inputs.scout_args }}

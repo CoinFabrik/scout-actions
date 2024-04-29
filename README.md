@@ -1,4 +1,4 @@
-# Scout: Security Analysis Tool
+# Scout: Security Analysis Tool - Github action
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/CoinFabrik/scout/c1eb3073f85b051dc9ce2fa0ab1ebab4bde0914e/assets/scout.png" alt="Scout in a Dark Forest" width="300" center  />
@@ -9,27 +9,6 @@ Scout is an extensible open-source tool intended to assist [ink!](https://use.in
 This tool will help developers write secure and more robust smart contracts.
 
 Our interest in this project comes from our experience in manual auditing and our usage of comparable tools in other blockchains. To improve coverage and precision, we´ll persist in research efforts on static and dynamic analysis techniques.
-
-## Quick Start
-
-For a quick start, make sure that [Cargo](https://doc.rust-lang.org/cargo/getting-started/installation.html) is installed on your computer. Then, install Scout dependencies by running the following command:
-
-```bash
-cargo install cargo-dylint dylint-link
-```
-
-Afterwards, install Scout with the following command:
-
-```bash
-cargo install cargo-scout-audit
-```
-
-To run Scout on your project, navigate to its root directory and execute the following command:
-
-```bash
-cargo scout-audit
-```
-For more information on Scout's installation and usage, please refer to Scout's documentation for [ink!](https://github.com/CoinFabrik/scout) or [Soroban](https://github.com/CoinFabrik/scout-soroban).
 
 ## How to integrate with Github Actions
 
@@ -43,9 +22,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: coinfabrik/scout-actions@v1
+      - uses: coinfabrik/scout-actions@v2.3
         with:
           target: './target/Cargo.toml'
+          scout_args: (scout arguments)
+          markdown_output: (enable markdown output)
 ```
 
 
@@ -58,24 +39,62 @@ jobs:
 - **runs-on: ubuntu-latest**: This specifies the runtime environment for the job. Here, the job will run on the latest available Ubuntu version.
 - **steps**: This is a list of tasks to be carried out in the job. In this case, there are two tasks.
 - **uses: actions/checkout@v2**: The first task uses a GitHub Action called 'checkout@v2'. This is a predefined Action that allows GitHub Actions to work with a copy of your repository.
-- **uses: coinfabrik/scout-actions@v1**: The second task uses the GitHub Action 'scout-actions@v1', a version specified by coinfabrik.
-- **with** and **target: './target/Cargo.toml'**: Under the 'coinfabrik/scout-actions@v1' task, an additional option with is configured, which sets a specific target for the action under with. In this case, the target is the file './target/Cargo.toml'.
+- **uses: coinfabrik/scout-actions@v2.3**: The second task uses the GitHub Action 'scout-actions@v1', a version specified by coinfabrik.
+- **with** and **target**: './target/Cargo.toml'**: Under the 'coinfabrik/scout-actions@v2.3' task, an additional option 
+with is configured, which sets a specific target for the action under with. In this case, the target is the file './target/Cargo.toml'.
 This toml file in the target directory likely has the dependencies and project configuration that will undergo analysis.
-In short, this .yml file sets up a GitHub Action that activates on any push to the repository. When triggered, it will checkout the repository and then run the 'scout-actions@v1' Action on the './target/Cargo.toml' file.
+- **with/scout-args**: allows you to specify custom arguments for scout. The default already is _-v_ which makes scout verbose, you don't need to specify it again.
+- **with/markdown_output**: "true" or "false" makes scout save findings report in Markdown format on the github-workspace for later usage. 
+
+ 
+In short, this .yml file sets up a GitHub Action that activates on any push to the repository. When triggered, it will 
+checkout the repository and then run the 'scout-actions@v2.3' Action on the './target/Cargo.toml' file.
 
 
 
 
 ### Options
 
-| Key              | Description
-|------------------|------------
-| `target`         | The path to the root of the project to be analyzed by Scout. It can be a path of Cargo.toml, and it defaults to the repo root.
+| Key               | Description                                                                                                                    |
+|-------------------|--------------------------------------------------------------------------------------------------------------------------------|
+| `target`          | The path to the root of the project to be analyzed by Scout. It can be a path of Cargo.toml, and it defaults to the repo root. | 
+| `scout-args`      | Allows you to specify custom arguments for scout. The default is _-v_ which makes scout verbose.                               | 
+| `markdown-output` | This makes scout save findings report in Markdown format on the github-workspace for later usage.                              | 
 
 
 ## Detectors
 
 Detectors available for Scout Actions are the ones available for Scout in its [ink!](https://github.com/CoinFabrik/scout?tab=readme-ov-file#detectors) and [Soroban](https://github.com/CoinFabrik/scout-soroban?tab=readme-ov-file#detectors) versions.                                                                                              
+
+
+## Full example
+
+```yaml
+name: scout-workflow
+on: [push]
+
+jobs:
+  nuevo-test:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: write
+      repository-projects: write
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+
+      - name: do scout
+        uses: coinfabrik/scout-actions@v2.3
+        with:
+          target: 'avoid-autokey-upgradable/avoid-autokey-upgradable-1/vulnerable-example/'
+          markdown_output: "true"
+
+      - uses: mshick/add-pr-comment@v2.8.2
+        with:
+          message-path:  ${{ github.workspace }}/report.md
+```
+
 
 ## Acknowledgements
 
