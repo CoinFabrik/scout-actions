@@ -12,12 +12,17 @@ inputs:
   scout_args:
     description: Scout args
     required: false
-    default: "-v"
+    default: "-v --output-format md-gh --output-path /github/workspace/report.md"
 
-  markdown_output:
-    description: Generate markdown output
+  scout_extra_args:
+    description: Scout extra args
     required: false
-    default: "false"
+    default: ""
+
+  # markdown_output:
+  #   description: Generate markdown output
+  #   required: false
+  #   default: "false"
 
 # Define your outputs here.
 # -> At the moment the output will be: ${{ github.workspace }}/report.md
@@ -33,5 +38,5 @@ runs:
     - ${{ inputs.target }}
   env:
     INPUT_TARGET: ${{ inputs.target }}
-    INPUT_MARKDOWN_OUTPUT: ${{ inputs.markdown_output }}
-    INPUT_SCOUT_ARGS: ${{ inputs.scout_args }}
+    # INPUT_MARKDOWN_OUTPUT: ${{ inputs.markdown_output }}
+    INPUT_SCOUT_ARGS: "${{ inputs.scout_args }} ${{ inputs.scout_extra_args }} "

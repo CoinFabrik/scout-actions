@@ -26,7 +26,6 @@ jobs:
         with:
           target: './target/Cargo.toml'
           scout_args: (scout arguments)
-          markdown_output: (enable markdown output)
 ```
 
 
@@ -44,7 +43,6 @@ jobs:
 with is configured, which sets a specific target for the action under with. In this case, the target is the file './target/Cargo.toml'.
 This toml file in the target directory likely has the dependencies and project configuration that will undergo analysis.
 - **with/scout-args**: allows you to specify custom arguments for scout. The default already is _-v_ which makes scout verbose, you don't need to specify it again.
-- **with/markdown_output**: "true" or "false" makes scout save findings report in Markdown format on the github-workspace for later usage. 
 
  
 In short, this .yml file sets up a GitHub Action that activates on any push to the repository. When triggered, it will 
@@ -55,11 +53,11 @@ checkout the repository and then run the 'scout-actions@v2.3' Action on the './t
 
 ### Options
 
-| Key               | Description                                                                                                                    |
-|-------------------|--------------------------------------------------------------------------------------------------------------------------------|
-| `target`          | The path to the root of the project to be analyzed by Scout. It can be a path of Cargo.toml, and it defaults to the repo root. | 
-| `scout-args`      | Allows you to specify custom arguments for scout. The default is _-v_ which makes scout verbose.                               | 
-| `markdown-output` | This makes scout save findings report in Markdown format on the github-workspace for later usage.                              | 
+| Key                | Description                                                                                                                    |
+|--------------------|--------------------------------------------------------------------------------------------------------------------------------|
+| `target`           | The path to the root of the project to be analyzed by Scout. It can be a path of Cargo.toml, and it defaults to the repo root. | 
+| `scout-args`       | Allows you to overwrite the arguments for scout. The default is _-v_ which makes scout verbose and selects markdown output.    | 
+| `scout-extra-args` | This parameter allows you to add arguments for scout execution while keeping the required for markdown output and -v.          | 
 
 
 ## Detectors
@@ -88,7 +86,6 @@ jobs:
         uses: coinfabrik/scout-actions@v2.4
         with:
           target: 'avoid-autokey-upgradable/avoid-autokey-upgradable-1/vulnerable-example/'
-          markdown_output: "true"
 
       - uses: mshick/add-pr-comment@v2.8.2
         with:
