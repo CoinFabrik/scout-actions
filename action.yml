@@ -1,6 +1,6 @@
 name: Run Scout-action
 description: Run scout-action
-author: devops_cf
+author: Coinfabrik
 
 # Define your inputs here.
 inputs:
@@ -8,23 +8,14 @@ inputs:
     description: Folder to scan for Cargo.toml
     required: true
     default: "."
-
   scout_args:
     description: Scout args
     required: false
-    default: "-v"
-
-  markdown_output:
-    description: Generate markdown output
+    default: "-v --output-format md-gh --output-path /github/workspace/report.md"
+  scout_extra_args:
+    description: Scout extra args
     required: false
-    default: "false"
-
-# Define your outputs here.
-# -> At the moment the output will be: ${{ github.workspace }}/report.md
-#outputs:
-#  mdreport:
-#    description: markdown report
-
+    default: ""
 #run docker
 runs:
   using: docker
@@ -33,5 +24,4 @@ runs:
     - ${{ inputs.target }}
   env:
     INPUT_TARGET: ${{ inputs.target }}
-    INPUT_MARKDOWN_OUTPUT: ${{ inputs.markdown_output }}
-    INPUT_SCOUT_ARGS: ${{ inputs.scout_args }}
+    INPUT_SCOUT_ARGS: "${{ inputs.scout_args }} ${{ inputs.scout_extra_args }} "

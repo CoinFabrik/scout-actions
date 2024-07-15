@@ -1,4 +1,4 @@
-FROM coinfabrik/scout-image:latest
+FROM coinfabrik/scout:latest
 SHELL ["/bin/bash", "-c"]
 WORKDIR /scoutme
 COPY . .
