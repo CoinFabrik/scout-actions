@@ -21,11 +21,12 @@ jobs:
   analyze:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: coinfabrik/scout-actions@v2.4
+      - uses: actions/checkout@v4
+      - uses: coinfabrik/scout-actions@v3
         with:
-          target: './target/Cargo.toml'
+          target: './target'
           scout_args: (scout arguments)
+          scout_extra_args: (scout extra arguments)
 ```
 
 
@@ -37,18 +38,16 @@ jobs:
 - **analyze**: This is the name of the job.
 - **runs-on: ubuntu-latest**: This specifies the runtime environment for the job. Here, the job will run on the latest available Ubuntu version.
 - **steps**: This is a list of tasks to be carried out in the job. In this case, there are two tasks.
-- **uses: actions/checkout@v2**: The first task uses a GitHub Action called 'checkout@v2'. This is a predefined Action that allows GitHub Actions to work with a copy of your repository.
-- **uses: coinfabrik/scout-actions@v2.4**: The second task uses the GitHub Action 'scout-actions@v1', a version specified by coinfabrik.
-- **with** and **target**: './target/Cargo.toml'**: Under the 'coinfabrik/scout-actions@v2.4' task, an additional option 
-with is configured, which sets a specific target for the action under with. In this case, the target is the file './target/Cargo.toml'.
+- **uses: actions/checkout@v4**: The first task uses a GitHub Action called 'checkout@v4'. This is a predefined Action that allows GitHub Actions to work with a copy of your repository.
+- **uses: coinfabrik/scout-actions@v3**: The second task uses the GitHub Action 'scout-actions@v3', a version specified by coinfabrik.
+- **with** and **target**: **'./target'**: Under the 'coinfabrik/scout-actions@v3' task, an additional option 
+with is configured, which sets a specific target for the action under with. In this case, the target is the path `./target`, and scout will run on sub/project: `./target/Cargo.toml`.
 This toml file in the target directory likely has the dependencies and project configuration that will undergo analysis.
-- **with/scout-args**: allows you to specify custom arguments for scout. The default already is _-v_ which makes scout verbose, you don't need to specify it again.
+- **with/scout_args**: allows you to overwrite current arguments for scout, which make it generate a markdown report which can be later included in PRs and tickets. Most users don't need to change this.
+- **with/scout_extra_args**: allows you to specify extra arguments for scout, which will be added to the already present for markdown report generation. Most users don't need to change this.
 
  
-In short, this .yml file sets up a GitHub Action that activates on any push to the repository. When triggered, it will 
-checkout the repository and then run the 'scout-actions@v2.3' Action on the './target/Cargo.toml' file.
-
-
+In short, this .yml file sets up a GitHub Action that activates on any push to the repository. When triggered, it will checkout the repository and then run the 'scout-actions@v3' Action on the './target' path.
 
 
 ### Options
@@ -56,8 +55,8 @@ checkout the repository and then run the 'scout-actions@v2.3' Action on the './t
 | Key                | Description                                                                                                                    |
 |--------------------|--------------------------------------------------------------------------------------------------------------------------------|
 | `target`           | The path to the root of the project to be analyzed by Scout. It can be a path of Cargo.toml, and it defaults to the repo root. | 
-| `scout-args`       | Allows you to overwrite the arguments for scout. The default is _-v_ which makes scout verbose and selects markdown output.    | 
-| `scout-extra-args` | This parameter allows you to add arguments for scout execution while keeping the required for markdown output and -v.          | 
+| `scout_args`       | Allows you to overwrite the arguments for scout. The default makes scout output a markdown output.                             | 
+| `scout_extra_args` | This parameter allows you to add arguments for scout execution while keeping the required for markdown output.                 | 
 
 
 ## Detectors
@@ -80,12 +79,12 @@ jobs:
       repository-projects: write
     steps:
       - name: checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: do scout
-        uses: coinfabrik/scout-actions@v2.4
+        uses: coinfabrik/scout-actions@v3
         with:
-          target: 'avoid-autokey-upgradable/avoid-autokey-upgradable-1/vulnerable-example/'
+          target: 'avoid-autokey-upgradable/avoid-autokey-upgradable-1/vulnerable-example'
 
       - uses: mshick/add-pr-comment@v2.8.2
         with:
@@ -99,11 +98,13 @@ Scout is an open source vulnerability analyzer developed by [CoinFabrik's](https
 
 We received support through grants from the [Web3 Foundation Grants Program](https://github.com/w3f/Grants-Program/tree/master), the [Aleph Zero Ecosystem Funding Program](https://alephzero.org/ecosystem-funding-program) and the [Stellar Community Fund](https://communityfund.stellar.org).
 
+
 | Grant Program | Description |
-|---------------|-------------|
+|:-------------:|-------------|
 | ![Web3 Foundation](https://raw.githubusercontent.com/CoinFabrik/scout/main/assets/web3-foundation.png) | **Proof of Concept:** We collaborated with the [Laboratory on Foundations and Tools for Software Engineering (LaFHIS)](https://lafhis.dc.uba.ar/) at the [University of Buenos Aires](https://www.uba.ar/internacionales/index.php?lang=en) to establish analysis techniques and tools for our detectors, as well as to create an initial list of vulnerability classes and code examples. [View Grant](https://github.com/CoinFabrik/web3-grant) \| [Application Form](https://github.com/w3f/Grants-Program/blob/master/applications/ScoutCoinFabrik.md).<br><br>**Prototype:** We built a functioning prototype using linting detectors built with [Dylint](https://github.com/trailofbits/dylint) and expanded the list of vulnerability classes, detectors, and test cases. [View Prototype](https://coinfabrik.github.io/scout/) \| [Application Form](https://github.com/w3f/Grants-Program/blob/master/applications/ScoutCoinFabrik_2.md). |
 | ![Aleph Zero](https://raw.githubusercontent.com/CoinFabrik/scout/main/assets/aleph-zero.png) | We improved the precision and number of detectors for the tool with a multi-phase approach. This included a manual vulnerability analysis of projects within the Aleph Zero ecosystem, comprehensive testing of the tool on leading projects, and refining its detection accuracy. |
 | ![Stellar Community Fund](https://github.com/CoinFabrik/scout-soroban/blob/main/docs/static/img/stellar.png) | We added support for Stellar's smart contract language, Soroban. We included various output formats, such as an HTML report, improved the tool's precision and recall, and added a GitHub action to run the tool with pull requests.|
+
 
 ## About CoinFabrik
 
