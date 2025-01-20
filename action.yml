@@ -11,7 +11,7 @@ inputs:
   scout_args:
     description: Scout args
     required: false
-    default: "-v --output-format md-gh --output-path /github/workspace/report.md"
+    default: "-v --output-format md-gh --output-path /github/workspace/report.md --cicd /github/workspace"
   scout_extra_args:
     description: Scout extra args
     required: false
