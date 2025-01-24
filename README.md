@@ -4,11 +4,7 @@
   <img src="https://raw.githubusercontent.com/CoinFabrik/scout/c1eb3073f85b051dc9ce2fa0ab1ebab4bde0914e/assets/scout.png" alt="Scout in a Dark Forest" width="300" center  />
 </p>
 
-Scout is an extensible open-source tool intended to assist [ink!](https://use.ink/smart-contracts-polkadot/) and [Soroboan](https://stellar.org/soroban) smart contract developers and auditors detect common security issues and deviations from best practices.
-
-This tool will help developers write secure and more robust smart contracts.
-
-Our interest in this project comes from our experience in manual auditing and our usage of comparable tools in other blockchains. To improve coverage and precision, we´ll persist in research efforts on static and dynamic analysis techniques.
+Scout is an extensible open-source tool intended to assist [ink!](https://use.ink/smart-contracts-polkadot/), [Soroban](https://stellar.org/soroban) and [Substrate](https://substrate.io/) developers and auditors detect common security issues and deviations from best practices.
 
 ## How to integrate with Github Actions
 
@@ -54,24 +50,26 @@ In short, this .yml file sets up a GitHub Action that activates on any push to t
 
 | Key                | Description                                                                                                                    |
 |--------------------|--------------------------------------------------------------------------------------------------------------------------------|
-| `target`           | The path to the root of the project to be analyzed by Scout. It can be a path of Cargo.toml, and it defaults to the repo root. | 
+| `target`           | The path to the root of the project to be analyzed by Scout. It can be a path of `Cargo.toml`, and it defaults to the repo root. | 
 | `scout_args`       | Allows you to overwrite the arguments for scout. The default makes scout output a markdown output.                             | 
 | `scout_extra_args` | This parameter allows you to add arguments for scout execution while keeping the required for markdown output.                 | 
 
 
 ## Detectors
 
-Detectors available for Scout Actions are the ones available for Scout in its [ink!](https://github.com/CoinFabrik/scout?tab=readme-ov-file#detectors) and [Soroban](https://github.com/CoinFabrik/scout-soroban?tab=readme-ov-file#detectors) versions.                                                                                              
-
+Refer to Scout's [documentation site](https://coinfabrik.github.io/scout-audit/docs/intro) for a full list of the detectors for Ink, Soroban and Substrate.
 
 ## Full example
 
 ```yaml
-name: scout-workflow
-on: [push]
+name: scout-audit
+on:
+  pull_request:
+    branches:
+      - main
 
 jobs:
-  nuevo-test:
+  scout-audit:
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
@@ -82,13 +80,21 @@ jobs:
         uses: actions/checkout@v4
 
       - name: do scout
-        uses: coinfabrik/scout-actions@v3
+        uses: coinfabrik/scout-actions@v3.1
         with:
-          target: 'avoid-autokey-upgradable/avoid-autokey-upgradable-1/vulnerable-example'
+          target: '' # Path of the project/file to execute Scout on.
 
       - uses: mshick/add-pr-comment@v2.8.2
         with:
           message-path:  ${{ github.workspace }}/report.md
+
+      # # Optional: Add the following step to block the merge of the commit if Scout finds any issues.
+      - name: Check for error
+        run: |
+          if [ -f "${{ github.workspace }}/FAIL" ]; then
+            echo "Error: Scout found issues."
+            exit 1
+          fi
 ```
 
 
@@ -104,7 +110,7 @@ We received support through grants from the [Web3 Foundation Grants Program](htt
 | ![Web3 Foundation](https://raw.githubusercontent.com/CoinFabrik/scout/main/assets/web3-foundation.png) | **Proof of Concept:** We collaborated with the [Laboratory on Foundations and Tools for Software Engineering (LaFHIS)](https://lafhis.dc.uba.ar/) at the [University of Buenos Aires](https://www.uba.ar/internacionales/index.php?lang=en) to establish analysis techniques and tools for our detectors, as well as to create an initial list of vulnerability classes and code examples. [View Grant](https://github.com/CoinFabrik/web3-grant) \| [Application Form](https://github.com/w3f/Grants-Program/blob/master/applications/ScoutCoinFabrik.md).<br><br>**Prototype:** We built a functioning prototype using linting detectors built with [Dylint](https://github.com/trailofbits/dylint) and expanded the list of vulnerability classes, detectors, and test cases. [View Prototype](https://coinfabrik.github.io/scout/) \| [Application Form](https://github.com/w3f/Grants-Program/blob/master/applications/ScoutCoinFabrik_2.md). |
 | ![Aleph Zero](https://raw.githubusercontent.com/CoinFabrik/scout/main/assets/aleph-zero.png) | We improved the precision and number of detectors for the tool with a multi-phase approach. This included a manual vulnerability analysis of projects within the Aleph Zero ecosystem, comprehensive testing of the tool on leading projects, and refining its detection accuracy. |
 | ![Stellar Community Fund](https://github.com/CoinFabrik/scout-soroban/blob/main/docs/static/img/stellar.png) | We added support for Stellar's smart contract language, Soroban. We included various output formats, such as an HTML report, improved the tool's precision and recall, and added a GitHub action to run the tool with pull requests.|
-
+| ![PAL](https://polkadotassurance.com/wp-content/uploads/2023/03/PAL_logo.svg) | We added support for Substrate pallets in all of Scout's features: CLI, VS Code extension and GitHub Action. |
 
 ## About CoinFabrik
 
