@@ -1,27 +1,119 @@
-name: Run Scout-action
-description: Run scout-action
-author: Coinfabrik
+name: "Scout Security Analysis"
+description: "Runs Scout security analysis on Rust projects and reports findings"
+author: "Coinfabrik"
+branding:
+  icon: "shield"
+  color: "blue"
 
-# Define your inputs here.
 inputs:
-  target:
-    description: Folder to scan for Cargo.toml
-    required: true
-    default: "."
-  scout_args:
-    description: Scout args
+  working_directory:
+    description: |
+      Directory containing the Cargo.toml file to analyze.
+      Examples:
+        - "." (current directory)
+        - "./my-project"
+        - "packages/rust-project"
     required: false
-    default: "-v --output-format md-gh --output-path /github/workspace/report.md --cicd /github/workspace"
+    default: "."
+
+  verbose:
+    description: |
+      Enable verbose output for detailed analysis information.
+      Set to 'true' for debugging purposes.
+    required: false
+    default: false
+
+  fail_on_error:
+    description: |
+      Controls whether the action should fail if Scout finds security issues.
+      Set to 'false' to continue pipeline execution regardless of findings.
+    required: false
+    default: true
+
+  comment_pr:
+    description: |
+      Automatically comment analysis results on the PR.
+      Requires 'github_token' to be set.
+    required: false
+    default: true
+
+  github_token:
+    description: |
+      GitHub token for PR commenting functionality.
+      Required when comment_pr is set to true.
+    required: false
+
   scout_extra_args:
-    description: Scout extra args
+    description: |
+      Additional arguments to pass to Scout CLI.
+      Example: "--exclude [DETECTOR_NAME]"
     required: false
     default: ""
-#run docker
+
 runs:
-  using: docker
-  image: Dockerfile
-  args:
-    - ${{ inputs.target }}
-  env:
-    INPUT_TARGET: ${{ inputs.target }}
-    INPUT_SCOUT_ARGS: "${{ inputs.scout_args }} ${{ inputs.scout_extra_args }} "
+  using: "composite"
+  steps:
+    - name: Run scout analysis
+      shell: bash
+      run: |
+        # Running scout analysis
+
+        log() {
+          echo "[INFO] $1"
+        }
+
+        section() {
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "🚀 $1"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        }
+
+        # Configuration
+        DOCKER_QUIET=${{ inputs.verbose == 'true' && '' || '--quiet' }}
+        WORKSPACE="${{ github.workspace }}"
+        REPORT_DIR="$WORKSPACE/scout-report"
+
+        section "Building Scout Environment"
+        log "Building Scout Docker image..."
+        cd ${{ github.action_path }}
+        docker build $DOCKER_QUIET -t scout-action . > /dev/null 2>&1
+
+        section "Preparing Analysis"
+        log "Creating report directory..."
+        mkdir -p "$REPORT_DIR"
+
+        section "Running Security Analysis"
+        log "Target directory: ${{ inputs.working_directory }}"
+        log "Verbose mode: ${{ inputs.verbose }}"
+
+        docker run $DOCKER_QUIET \
+          -v "$WORKSPACE:/scoutme" \
+          -v "$REPORT_DIR:/output" \
+          -w /scoutme \
+          -e INPUT_TARGET="${{ inputs.working_directory }}" \
+          -e INPUT_SCOUT_ARGS=" ${{ inputs.verbose == 'true' && '-v' || '' }} ${{ inputs.comment_pr == 'true' && '--output-format md-gh --output-path /output/report.md' || '' }} --cicd /output ${{ inputs.scout_extra_args }}" \
+          scout-action
+
+        if [ -f "$REPORT_DIR/report.md" ]; then
+          section "Processing Results"
+          log "Copying Scout report to workspace..."
+          cp "$REPORT_DIR/report.md" "$WORKSPACE/report.md"
+        fi
+
+    - name: Comment on PR
+      if: ${{ inputs.comment_pr == 'true' }}
+      uses: peter-evans/create-or-update-comment@v4
+      with:
+        issue-number: ${{ github.event.pull_request.number }}
+        token: ${{ inputs.github_token }}
+        body-path: ${{ github.workspace }}/report.md
+
+    - name: Check for failures
+      if: ${{ inputs.fail_on_error == 'true' }}
+      shell: bash
+      run: |
+        if [ -f "${{ github.workspace }}/scout-report/FAIL" ]; then
+          echo "❌ [ERROR] Scout analysis failed! Please check the report for details."
+          exit 1
+        fi
+        echo "✅ Scout analysis completed successfully!"
