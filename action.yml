@@ -33,9 +33,9 @@ inputs:
   comment_pr:
     description: |
       Automatically comment analysis results on the PR.
-      Requires 'github_token' to be set.
+      Requires github_token to be set.
     required: false
-    default: true
+    default: false
 
   github_token:
     description: |
@@ -50,10 +50,16 @@ inputs:
     required: false
     default: ""
 
+outputs:
+  report:
+    description: "Path to the generated markdown report file relative to workspace"
+    value: ${{ steps.run-scout.outputs.report }}
+
 runs:
   using: "composite"
   steps:
     - name: Run scout analysis
+      id: run-scout
       shell: bash
       run: |
         # Running scout analysis
@@ -72,6 +78,7 @@ runs:
         DOCKER_QUIET=${{ inputs.verbose == 'true' && '' || '--quiet' }}
         WORKSPACE="${{ github.workspace }}"
         REPORT_DIR="$WORKSPACE/scout-report"
+        REPORT_PATH="report.md"
 
         section "Building Scout Environment"
         log "Building Scout Docker image..."
@@ -91,13 +98,14 @@ runs:
           -v "$REPORT_DIR:/output" \
           -w /scoutme \
           -e INPUT_TARGET="${{ inputs.working_directory }}" \
-          -e INPUT_SCOUT_ARGS=" ${{ inputs.verbose == 'true' && '-v' || '' }} ${{ inputs.comment_pr == 'true' && '--output-format md-gh --output-path /output/report.md' || '' }} --cicd /output ${{ inputs.scout_extra_args }}" \
+          -e INPUT_SCOUT_ARGS=" ${{ inputs.verbose == 'true' && '-v' || '' }} --output-format md-gh --output-path /output/report.md --cicd /output ${{ inputs.scout_extra_args }}" \
           scout-action
 
         if [ -f "$REPORT_DIR/report.md" ]; then
           section "Processing Results"
           log "Copying Scout report to workspace..."
-          cp "$REPORT_DIR/report.md" "$WORKSPACE/report.md"
+          cp "$REPORT_DIR/report.md" "$WORKSPACE/$REPORT_PATH"
+          echo "report=$REPORT_PATH" >> $GITHUB_OUTPUT
         fi
 
     - name: Comment on PR
@@ -113,7 +121,7 @@ runs:
       shell: bash
       run: |
         if [ -f "${{ github.workspace }}/scout-report/FAIL" ]; then
-          echo "❌ [ERROR] Scout analysis failed! Please check the report for details."
+          echo "[ERROR] Scout analysis failed! Please check the report for details."
           exit 1
         fi
         echo "✅ Scout analysis completed successfully!"
