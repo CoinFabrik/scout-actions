@@ -8,30 +8,49 @@ Scout is an extensible open-source tool intended to assist [ink!](https://use.in
 
 ## How to integrate with Github Actions
 
-Create `.github/workflows/scout.yml`:
+Create `.github/workflows/scout.yml` with the following parameters:
 
 ```yaml
-name: Scout-actions
-on: [push]
+name: scout-audit
+on:
+  pull_request:
+    branches:
+      - main
+
 jobs:
-  analyze:
+  scout-audit:
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: write
+      repository-projects: write
     steps:
-      - uses: actions/checkout@v4
-      - uses: coinfabrik/scout-actions@v3
+      - name: checkout
+        uses: actions/checkout@v4
+
+      - name: do scout
+        uses: coinfabrik/scout-actions@v3
         with:
-          working_directory: "."
-          verbose: false
-          fail_on_error: true
-          comment_pr: false
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          scout_extra_args: ""
+          target: '' # Path to the root of your smart contract (e.g. contracts/token/)
+
+      - uses: mshick/add-pr-comment@v2.8.2
+        with:
+          message-path:  ${{ github.workspace }}/report.md
+
+      # Optional: Add the following step to block the merge of the commit if Scout finds any issues.
+      
+      - name: Check for error
+        run: |
+          if [ -f "${{ github.workspace }}/FAIL" ]; then
+            echo "Error: Scout found issues."
+            exit 1
+          fi
 ```
 
 ### YML Description
 
-- **name: Scout-actions**: This is the name of the GitHub Action which will be viewed on the GitHub Actions dashboard.
-- **on: [push]**: This line specifies the event that will trigger the action. In this case, the GitHub Action fires whenever a push is made to the repository.
+- **name: scout-audit**: This is the name of the GitHub Action which will be viewed on the GitHub Actions dashboard.
+- **on: [pull-request]**: This line specifies the event that will trigger the action. In this case, the GitHub Action fires whenever a pull request is made to the main branch.
 - **jobs**: GitHub Actions can contain several jobs. In this case, only one job named analyze has been set up.
 - **analyze**: This is the name of the job.
 - **runs-on: ubuntu-latest**: This specifies the runtime environment for the job. Here, the job will run on the latest available Ubuntu version.
